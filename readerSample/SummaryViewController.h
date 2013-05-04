@@ -19,6 +19,8 @@
     NSMutableArray* maryLink;
     NSMutableArray* maryDesc;
     
+    NSMutableArray* maryData;
+    
 }
 - (id)init;
 

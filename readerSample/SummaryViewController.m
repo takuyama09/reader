@@ -40,20 +40,39 @@
     maryTitle = [NSMutableArray array];
     maryLink = [NSMutableArray array];
     maryDesc = [NSMutableArray array];
+    maryData = [NSMutableArray array];
     
-    NSURL* url = [[NSURL alloc] initWithString:@"http://feeds.feedburner.com/hatena/b/hotentry"];
-    NSXMLParser* rssParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
-    [rssParser setDelegate:self];
-    [rssParser parse];
+    NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
     
-    NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
-    NSMutableArray* maryData = [NSMutableArray array];
+    NSArray* ary = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    NSLog(@"%@",ary);
+    //maryData = [NSMutableArray arrayWithArray:ary];
     
-    for(int i = 0;i<[maryTitle count];i++){
-        [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
-        [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
-        [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
-        [maryData addObject:mdicInfo];
+    if(true){
+        NSURL* url = [[NSURL alloc] initWithString:@"http://feeds.feedburner.com/hatena/b/hotentry"];
+        NSXMLParser* rssParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
+        [rssParser setDelegate:self];
+        [rssParser parse];
+        
+                
+        for(int i = 0;i<[maryTitle count];i++){
+            NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
+            [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
+            //NSLog(@"%@",[maryTitle objectAtIndex:i]);
+            [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
+            [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
+            //NSLog(@"hoge:%@",mdicInfo);
+            [maryData addObject:mdicInfo];
+        }
+        NSLog(@"%@",maryData);
+        
+        BOOL successful = [NSKeyedArchiver archiveRootObject:maryData toFile:filePath];
+        
+        if(!successful){
+            NSLog(@"ファイルの保存に失敗しました");
+        }
+        
     }
     
     
@@ -133,7 +152,7 @@ parseErrorOccurred:(NSError *)parseError {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [maryTitle count];
+    return [maryData count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -150,7 +169,9 @@ parseErrorOccurred:(NSError *)parseError {
     
     // Configure the cell...
     
-    cell.textLabel.text = [maryTitle objectAtIndex:indexPath.row];
+    NSLog(@"hoge:%@",maryData);
+    
+    cell.textLabel.text = [[maryData objectAtIndex:indexPath.row] objectForKey:@"title"];
     
     
     return cell;
@@ -160,8 +181,6 @@ parseErrorOccurred:(NSError *)parseError {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"hogehoge %@",maryDesc);
-    
     NSString* strLink = [maryLink objectAtIndex:indexPath.row];
     NSString* strDesc = [maryDesc objectAtIndex:indexPath.row];
     
