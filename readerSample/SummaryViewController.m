@@ -72,7 +72,6 @@
         
     }
     
-    
     UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height) style:UITableViewStylePlain];
     tableView.dataSource = self;
     tableView.delegate = self;
@@ -176,12 +175,10 @@ parseErrorOccurred:(NSError *)parseError {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString* strLink = [maryLink objectAtIndex:indexPath.row];
-    NSString* strDesc = [maryDesc objectAtIndex:indexPath.row];
+    NSLog(@"hoge %@",[[maryData objectAtIndex:indexPath.row] objectForKey:@"desc"]);
     
-    
-    DetailViewController* detailCnt = [[DetailViewController alloc] initWithDesc:strDesc link:strLink];
-    detailCnt.title = [maryTitle objectAtIndex:indexPath.row];
+    DetailViewController* detailCnt = [[DetailViewController alloc] initWithDesc:[[maryData objectAtIndex:indexPath.row] objectForKey:@"desc"] link:[[maryData objectAtIndex:indexPath.row] objectForKey:@"link"]];
+    detailCnt.title = [[maryData objectAtIndex:indexPath.row] objectForKey:@"title"];
     [self.navigationController pushViewController:detailCnt animated:YES];
     
 }
