@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "TopViewController.h"
 
 @implementation AppDelegate
 
@@ -15,6 +16,14 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    TopViewController* topCnt = [[TopViewController alloc] init];
+    topCnt.title = @"トップ";
+    
+    UINavigationController* naviCnt = [[UINavigationController alloc] initWithRootViewController:topCnt];
+    
+    self.window.rootViewController = naviCnt;
+    
     [self.window makeKeyAndVisible];
     return YES;
 }
