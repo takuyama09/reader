@@ -45,27 +45,24 @@
     NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
     NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
     
-    NSArray* ary = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
-    NSLog(@"%@",ary);
-    //maryData = [NSMutableArray arrayWithArray:ary];
+    NSArray* aryFromFileData = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
     
-    if(true){
+    maryData = [NSMutableArray arrayWithArray:aryFromFileData];
+    
+    if(aryFromFileData == nil){
+        
         NSURL* url = [[NSURL alloc] initWithString:@"http://feeds.feedburner.com/hatena/b/hotentry"];
         NSXMLParser* rssParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
         [rssParser setDelegate:self];
         [rssParser parse];
-        
                 
         for(int i = 0;i<[maryTitle count];i++){
             NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
             [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
-            //NSLog(@"%@",[maryTitle objectAtIndex:i]);
             [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
             [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
-            //NSLog(@"hoge:%@",mdicInfo);
             [maryData addObject:mdicInfo];
         }
-        NSLog(@"%@",maryData);
         
         BOOL successful = [NSKeyedArchiver archiveRootObject:maryData toFile:filePath];
         
@@ -168,8 +165,6 @@ parseErrorOccurred:(NSError *)parseError {
 	}
     
     // Configure the cell...
-    
-    NSLog(@"hoge:%@",maryData);
     
     cell.textLabel.text = [[maryData objectAtIndex:indexPath.row] objectForKey:@"title"];
     
