@@ -37,12 +37,12 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    
+    /*
     UINavigationBar* naviBar = [UINavigationBar new];
     naviBar.frame = CGRectMake(0,0,self.view.frame.size.width , 40);
     naviBar.backItem = UIBarButtonItemStyleDone;
     [self.view addSubview:naviBar];
-    
+    */
     
     //ナビゲーションコントロールを表示する
     //[self.navigationController setNavigationBarHidden:NO animated:NO];
