@@ -42,41 +42,73 @@
     maryDesc = [NSMutableArray array];
     maryData = [NSMutableArray array];
     
-    NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
+    tableListView = [[UITableView alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height) style:UITableViewStylePlain];
+    tableListView.dataSource = self;
+    tableListView.delegate = self;
+    [self.view addSubview:tableListView];
     
-    NSArray* aryFromFileData = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    [self.navigationController setToolbarHidden:NO animated:NO];
+    self.navigationController.toolbar.tintColor = [UIColor blackColor];
     
-    maryData = [NSMutableArray arrayWithArray:aryFromFileData];
+    UIBarButtonItem* reloadBtn = [[UIBarButtonItem alloc] initWithTitle:@"更新" style:UIBarButtonItemStyleBordered target:self action:@selector(reloadRssData)];
     
-    if(aryFromFileData == nil){
-        
-        NSURL* url = [[NSURL alloc] initWithString:@"http://feeds.feedburner.com/hatena/b/hotentry"];
-        NSXMLParser* rssParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
-        [rssParser setDelegate:self];
-        [rssParser parse];
-                
-        for(int i = 0;i<[maryTitle count];i++){
-            NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
-            [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
-            [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
-            [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
-            [maryData addObject:mdicInfo];
-        }
-        
-        BOOL successful = [NSKeyedArchiver archiveRootObject:maryData toFile:filePath];
-        
-        if(!successful){
-            NSLog(@"ファイルの保存に失敗しました");
-        }
-        
+    NSArray* aryItems = [NSArray arrayWithObjects:reloadBtn, nil];
+    
+    self.toolbarItems = aryItems;
+    
+}
+
+-(void)getRssData
+{
+    NSURL* url = [[NSURL alloc] initWithString:@"http://feeds.feedburner.com/hatena/b/hotentry"];
+    NSXMLParser* rssParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
+    [rssParser setDelegate:self];
+    [rssParser parse];
+}
+
+/**
+ *
+ * feedデータの初期化
+ *
+ **/
+-(void)initRssData
+{
+    [self getRssData];
+    
+    maryData = [NSMutableArray array];
+    
+    for(int i = 0;i<[maryTitle count];i++){
+        NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
+        [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
+        [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
+        [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
+        [mdicInfo setObject:@"NO" forKey:@"status"];
+        [maryData addObject:mdicInfo];
     }
     
-    UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height) style:UITableViewStylePlain];
-    tableView.dataSource = self;
-    tableView.delegate = self;
-    [self.view addSubview:tableView];
+    NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
+    BOOL successful = [NSKeyedArchiver archiveRootObject:maryData toFile:filePath];
     
+    if(!successful){
+        NSLog(@"ファイルの保存に失敗しました");
+    }
+
+    
+}
+
+/**
+ *
+ * feedデータの更新
+ *
+ **/
+-(void)reloadRssData
+{
+    [self getRssData];
+    
+    NSLog(@"更新");
+    
+    [tableListView reloadData];
     
 }
 
@@ -85,9 +117,6 @@ didStartElement:(NSString *)elementName
   namespaceURI:(NSString *)namespaceURI
  qualifiedName:(NSString *)qName
 	attributes:(NSDictionary *)attributeDict {
-    
-    
-    //NSLog(@"%@" , elementName);
     
     if([elementName isEqualToString:@"item"]){
         isItem = YES;
@@ -151,8 +180,27 @@ parseErrorOccurred:(NSError *)parseError {
     return [maryData count];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    
+    NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
+    NSArray* aryFromFileData = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    maryData = [NSMutableArray arrayWithArray:aryFromFileData];
+    
+    //ファイルの中身がなければ取得する
+    //if(true){
+    if(aryFromFileData == nil){
+        [self initRssData];
+    }
+    
+    [tableListView reloadData];
+    
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    //NSLog(@"init table");
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
@@ -167,6 +215,14 @@ parseErrorOccurred:(NSError *)parseError {
     
     cell.textLabel.text = [[maryData objectAtIndex:indexPath.row] objectForKey:@"title"];
     
+    NSString* strCheck = [[maryData objectAtIndex:indexPath.row] objectForKey:@"status"];
+    
+    if([strCheck isEqualToString:@"YES"]){
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+    else{
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
     
     return cell;
 }
@@ -175,9 +231,9 @@ parseErrorOccurred:(NSError *)parseError {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"hoge %@",[[maryData objectAtIndex:indexPath.row] objectForKey:@"desc"]);
+    int iIndex = indexPath.row;
     
-    DetailViewController* detailCnt = [[DetailViewController alloc] initWithDesc:[[maryData objectAtIndex:indexPath.row] objectForKey:@"desc"] link:[[maryData objectAtIndex:indexPath.row] objectForKey:@"link"]];
+    DetailViewController* detailCnt = [[DetailViewController alloc] initWithDataIndex:iIndex];
     detailCnt.title = [[maryData objectAtIndex:indexPath.row] objectForKey:@"title"];
     [self.navigationController pushViewController:detailCnt animated:YES];
     

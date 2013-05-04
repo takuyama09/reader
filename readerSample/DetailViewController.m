@@ -17,14 +17,13 @@
 
 #define TAG_DESCTIPTION 100
 
-- (id)initWithDesc:(NSString *)desc link:(NSString *)link
+- (id)initWithDataIndex:(int)iIndex
 {
     
     
     self = [super init];
     if(self){
-        strLink = link;
-        strDesc = desc;
+        iDataIndex = iIndex;
     }
     return self;
 }
@@ -43,6 +42,12 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    NSString *directory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *filePath = [directory stringByAppendingPathComponent:@"hoge.txt"];
+    NSArray* aryFromFileData = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    NSMutableArray* maryData = [NSMutableArray arrayWithArray:aryFromFileData];
+    mdicRssData = [maryData objectAtIndex:iDataIndex];
+    
     UISwipeGestureRecognizer* swipeRightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(selSwipeRightGesture:)];
     swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
     [self.view addGestureRecognizer:swipeRightGesture];
@@ -51,12 +56,21 @@
     
     UILabel* labelDesc = [UILabel new];
     labelDesc.frame = CGRectMake(0,0,self.view.frame.size.width,400);
-    labelDesc.text = strDesc;
+    labelDesc.text = [mdicRssData objectForKey:@"title"];
     labelDesc.userInteractionEnabled = YES;
     labelDesc.numberOfLines = 0;
     labelDesc.tag = TAG_DESCTIPTION;
     //labelDesc.backgroundColor = [UIColor redColor];
     [self.view addSubview:labelDesc];
+    
+    [mdicRssData setObject:@"YES" forKey:@"status"];
+    [maryData replaceObjectAtIndex:iDataIndex withObject:mdicRssData];
+    
+    BOOL successful = [NSKeyedArchiver archiveRootObject:maryData toFile:filePath];
+    
+    if(!successful){
+        NSLog(@"ファイルの保存に失敗しました");
+    }
     
 }
 
@@ -66,7 +80,7 @@
     NSLog(@"%d",touch.view.tag);
     
     if(touch.view.tag == TAG_DESCTIPTION){
-        WebViewController* webCnt = [[WebViewController alloc] initWithURL:[[NSURL alloc] initWithString:strLink]];
+        WebViewController* webCnt = [[WebViewController alloc] initWithURL:[[NSURL alloc] initWithString:[mdicRssData objectForKey:@"link"]]];
         UINavigationController* naviCnt = [[UINavigationController alloc] initWithRootViewController:webCnt];
         [self presentViewController:naviCnt animated:YES completion:nil];
     }
@@ -75,8 +89,6 @@
 
 -(void)selSwipeRightGesture:(UISwipeGestureRecognizer *)sender
 {
-    NSLog(@"piyopiyo");
-    
     [self.navigationController popViewControllerAnimated:YES];
     
 }

@@ -18,8 +18,9 @@
     NSMutableArray* maryTitle;
     NSMutableArray* maryLink;
     NSMutableArray* maryDesc;
-    
     NSMutableArray* maryData;
+    
+    UITableView* tableListView;
     
 }
 - (id)init;

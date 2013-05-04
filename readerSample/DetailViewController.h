@@ -10,9 +10,9 @@
 
 @interface DetailViewController : UIViewController
 {
-    NSString* strLink;
-    NSString* strDesc;
+    int iDataIndex;
+    NSMutableDictionary* mdicRssData;
 }
-- (id)initWithDesc:(NSString *)desc link:(NSString *)link;
+- (id)initWithDataIndex:(int)iIndex;
 
 @end

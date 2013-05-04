@@ -49,6 +49,8 @@
     
 }
 
+
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
@@ -83,8 +85,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"hogehoge");
-    
+
     SummaryViewController* summaryCnt = [[SummaryViewController alloc] init];
     summaryCnt.title = @"さまりー";
     [self.navigationController pushViewController:summaryCnt animated:YES];
