@@ -36,37 +36,26 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+
+    UIBarButtonItem* closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"×" style:UIBarButtonItemStyleBordered target:self action:@selector(closeModalView)];
     
-    
-    UINavigationBar* naviBar = [UINavigationBar new];
-    naviBar.delegate = self;
-    naviBar.frame = CGRectMake(0,0,self.view.frame.size.width , 44);
-    naviBar.backItem.rightBarButtonItems = UIBarButtonSystemItemDone;
-    
-    [self.view addSubview:naviBar];
-    
-    
-    
-    //self.navigationItem.title = @"hoge";
-    
-    /*
-    UIBarButtonItem *btn = [[UIBarButtonItem alloc]
-                             initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
-                             target:self action:@selector(hoge:)];
-    self.navigationItem.rightBarButtonItem = btn;
-    
-    self.navigationItem.backBarButtonItem = btn;
-     */
+    self.navigationItem.rightBarButtonItem = closeBtn;
     
     UIWebView *wv = [[UIWebView alloc] init];
     wv.delegate = self;
-    wv.frame = CGRectMake(0,44, self.view.frame.size.width, self.view.frame.size.height);
+    wv.frame = CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height);
     wv.scalesPageToFit = YES;
     [self.view addSubview:wv];
     
     NSURLRequest *req = [NSURLRequest requestWithURL:url];
     [wv loadRequest:req];
     
+}
+
+- (void)closeModalView
+{
+    NSLog(@"close");
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didReceiveMemoryWarning

@@ -67,7 +67,8 @@
     
     if(touch.view.tag == TAG_DESCTIPTION){
         WebViewController* webCnt = [[WebViewController alloc] initWithURL:[[NSURL alloc] initWithString:strLink]];
-        [self presentViewController:webCnt animated:YES completion:nil];
+        UINavigationController* naviCnt = [[UINavigationController alloc] initWithRootViewController:webCnt];
+        [self presentViewController:naviCnt animated:YES completion:nil];
     }
     
 }
