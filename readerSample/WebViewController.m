@@ -37,22 +37,30 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    /*
+    
     UINavigationBar* naviBar = [UINavigationBar new];
-    naviBar.frame = CGRectMake(0,0,self.view.frame.size.width , 40);
-    naviBar.backItem = UIBarButtonItemStyleDone;
+    naviBar.delegate = self;
+    naviBar.frame = CGRectMake(0,0,self.view.frame.size.width , 44);
+    naviBar.backItem.rightBarButtonItems = UIBarButtonSystemItemDone;
+    
     [self.view addSubview:naviBar];
-    */
     
-    //ナビゲーションコントロールを表示する
-    //[self.navigationController setNavigationBarHidden:NO animated:NO];
     
-    //タイトルを「Hoge」にする
-    //self.navigationItem.title = @"Hoge";
+    
+    //self.navigationItem.title = @"hoge";
+    
+    /*
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc]
+                             initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                             target:self action:@selector(hoge:)];
+    self.navigationItem.rightBarButtonItem = btn;
+    
+    self.navigationItem.backBarButtonItem = btn;
+     */
     
     UIWebView *wv = [[UIWebView alloc] init];
     wv.delegate = self;
-    wv.frame = CGRectMake(0, 40, self.view.frame.size.width, self.view.frame.size.height);
+    wv.frame = CGRectMake(0,44, self.view.frame.size.width, self.view.frame.size.height);
     wv.scalesPageToFit = YES;
     [self.view addSubview:wv];
     

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WebViewController : UINavigationController <UIWebViewDelegate>
+@interface WebViewController : UIViewController <UIWebViewDelegate>
 {
     NSURL* url;
 }

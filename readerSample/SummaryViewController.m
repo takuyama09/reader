@@ -46,15 +46,21 @@
     [rssParser setDelegate:self];
     [rssParser parse];
     
+    NSMutableDictionary* mdicInfo = [NSMutableDictionary dictionary];
+    NSMutableArray* maryData = [NSMutableArray array];
+    
+    for(int i = 0;i<[maryTitle count];i++){
+        [mdicInfo setObject:[maryTitle objectAtIndex:i] forKey:@"title"];
+        [mdicInfo setObject:[maryLink objectAtIndex:i] forKey:@"link"];
+        [mdicInfo setObject:[maryDesc objectAtIndex:i] forKey:@"desc"];
+        [maryData addObject:mdicInfo];
+    }
+    
+    
     UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0,self.view.frame.size.width,self.view.frame.size.height) style:UITableViewStylePlain];
     tableView.dataSource = self;
     tableView.delegate = self;
     [self.view addSubview:tableView];
-    
-    
-    
-    
-    
     
     
 }
@@ -83,10 +89,6 @@ didStartElement:(NSString *)elementName
     if([elementName isEqualToString:@"description"] && isItem == YES){
         isDesc = YES;
     }
-    
-    
-    
-    
     
 }
 
